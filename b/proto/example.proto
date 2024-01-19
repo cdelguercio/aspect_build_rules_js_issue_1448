@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package example;
+
+service ExampleService {
+  rpc ExampleEndpoint(ExampleMessage)
+      returns (ExampleMessage) {}
+}
+
+// Simple message to demonstrate proto file
+message ExampleMessage {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+}

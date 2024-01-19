@@ -1,0 +1,37 @@
+load("@npm_issue_1448//:defs.bzl", "npm_link_all_packages")
+load("@npm_issue_1448//a:vite/package_json.bzl", vite_bin = "bin")
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+CONFIGS = [
+    "tsconfig.json",
+    "vite.config.ts",
+]
+
+SRCS = [
+    "index.html",
+    "src/main.ts",
+]
+
+BUNDLE_DEPS = [":node_modules/" + dep for dep in [
+    "@grpc/grpc-js",
+    "@issue-1448/example-api",
+    "@rollup/plugin-commonjs",
+    "vite",
+]]
+
+vite_bin.vite(
+    name = "vite_build",
+    srcs = CONFIGS + SRCS + BUNDLE_DEPS,
+    args = ["build"],
+    chdir = package_name(),
+    out_dirs = ["dist"],
+)
+
+vite_bin.vite_binary(
+    name = "vite",
+    chdir = package_name(),
+    data = CONFIGS + SRCS + BUNDLE_DEPS,
+)

@@ -1,0 +1,36 @@
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@npm_issue_1448//:defs.bzl", "npm_link_all_packages")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_proto_grpc//js:defs.bzl", "js_grpc_web_library")
+
+npm_link_all_packages(name = "node_modules")
+
+proto_library(
+    name = "xxxxx",
+    srcs = ["example.proto"],
+    visibility = ["//visibility:public"],
+)
+
+js_grpc_web_library(
+    name = "example_js_grpc",
+    options = {
+        "@rules_proto_grpc//js:grpc_web_js_plugin": [
+            "import_style=commonjs+dts",
+            "mode=grpcwebtext",
+        ],
+        "@rules_proto_grpc//js:js_plugin": [
+            "import_style=commonjs",
+            "binary",
+        ],
+        "@rules_proto_grpc//js:ts_plugin": ["import_style=commonjs"],
+    },
+    protos = ["xxxxx"],
+    visibility = ["//visibility:public"],
+)
+
+npm_package(
+    name = "my_npm_package",  # change me to "proto" to make it build
+    srcs = [":example_js_grpc"],
+    package = "@issue-1448/example-api",
+    visibility = ["//visibility:public"],
+)
